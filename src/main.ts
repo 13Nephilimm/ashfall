@@ -34,8 +34,30 @@ type Character = {
   const heroGraphic = new Graphics().rect(0, 0, 20, 30).fill("blue");
   app.stage.addChild(heroGraphic);
 
-  // Listen for animate update
+  // Jump input
+  window.addEventListener("keydown", (keypress) => {
+    if (keypress.key === " " && hero.isOnGround) {
+      hero.velocityY -= hero.jumpForce;
+      hero.isOnGround = false;
+    }
+  });
+
+  // Game loop
   app.ticker.add(() => {
+    // Apply gravity every frame
+    hero.velocityY += hero.gravity;
+
+    // Move hero according to velocity
+    hero.currentVerticalPosition += hero.velocityY;
+
+    // Ground collision check
+    if (hero.currentVerticalPosition >= groundY) {
+      hero.currentVerticalPosition = groundY;
+      hero.isOnGround = true;
+      hero.velocityY = 0;
+    }
+
+    // Update graphics position
     heroGraphic.position.set(5, hero.currentVerticalPosition - 30);
   });
 })();
