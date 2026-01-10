@@ -8,6 +8,15 @@ type Character = {
   isOnGround: boolean;
 };
 
+type Enemy = {
+  x: number;
+  y: number;
+  hieght: number;
+  width: number;
+  speed: number;
+  graphic: Graphics;
+};
+
 (async () => {
   const app = new Application();
   await app.init({
@@ -22,6 +31,37 @@ type Character = {
     .rect(0, groundY, app.screen.width, 1)
     .fill("yellow");
   app.stage.addChild(platform);
+
+  const enemies: Enemy[] = [
+    {
+      x: app.screen.width + 10,
+      y: groundY - 25,
+      hieght: 25,
+      width: 15,
+      speed: 3,
+      graphic: new Graphics().rect(0, 0, 15, 25).fill("red"),
+    },
+    {
+      x: app.screen.width + 150,
+      y: groundY - 25,
+      hieght: 25,
+      width: 15,
+      speed: 3,
+      graphic: new Graphics().rect(0, 0, 15, 25).fill("red"),
+    },
+    {
+      x: app.screen.width + 300,
+      y: groundY - 25,
+      hieght: 25,
+      width: 15,
+      speed: 3,
+      graphic: new Graphics().rect(0, 0, 15, 25).fill("red"),
+    },
+  ];
+
+  enemies.forEach((enemy) => {
+    app.stage.addChild(enemy.graphic);
+  });
 
   const hero: Character = {
     velocityY: 0,
@@ -58,6 +98,16 @@ type Character = {
     }
 
     // Update graphics position
-    heroGraphic.position.set(5, hero.currentVerticalPosition - 30);
+    heroGraphic.position.set(256, hero.currentVerticalPosition - 30);
+
+    // Enemy movement
+    enemies.forEach((enemy) => {
+      enemy.x -= enemy.speed;
+      enemy.graphic.position.set(enemy.x, groundY - enemy.hieght);
+
+      if (enemy.x + enemy.width < 0) {
+        enemy.x = app.screen.width + Math.random() * 200;
+      }
+    });
   });
 })();
