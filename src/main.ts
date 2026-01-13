@@ -5,6 +5,7 @@ import {
   Texture,
   AnimatedSprite,
   Rectangle,
+  Sprite,
 } from "pixi.js";
 
 type Character = {
@@ -28,17 +29,23 @@ type Enemy = {
 (async () => {
   const app = new Application();
   await app.init({
-    background: "#1b1a1f",
     antialias: true,
     resizeTo: window,
   });
   document.getElementById("pixi-container")!.appendChild(app.canvas);
 
-  const groundY = 600;
+  const groundY = 650;
   const platform = new Graphics()
     .rect(0, groundY, app.screen.width, 1)
     .fill("yellow");
   app.stage.addChild(platform);
+
+  // Background
+  const gameBackgroundTexture = await Assets.load("/assets/city.png");
+  const gameBackgroundSprite = new Sprite(gameBackgroundTexture);
+  gameBackgroundSprite.width = app.screen.width;
+  gameBackgroundSprite.height = app.screen.height;
+  app.stage.addChild(gameBackgroundSprite);
 
   // Load the hero sprite sheet
   const heroTexture = await Assets.load("/assets/hero-run.png"); // Update this path
@@ -62,16 +69,26 @@ type Enemy = {
 
   // Create animated sprite
   const heroSprite = new AnimatedSprite(frames);
-  heroSprite.animationSpeed = 0.15;
+  heroSprite.animationSpeed = 0.2;
   heroSprite.play();
-  heroSprite.scale.set(1.5);
+  heroSprite.scale.set(2);
   heroSprite.anchor.set(0.5, 1); // Bottom center anchor
+
+  const debugBox = new Graphics()
+    .rect(
+      -heroSprite.width * heroSprite.anchor.x,
+      -heroSprite.height * heroSprite.anchor.y,
+      heroSprite.width,
+      heroSprite.height
+    )
+    .stroke({ width: 2, color: 0x00ff00 });
+  heroSprite.addChild(debugBox);
 
   const hero: Character = {
     velocityY: 0,
     currentVerticalPosition: groundY,
     gravity: 1,
-    jumpForce: 16,
+    jumpForce: 19,
     isOnGround: true,
     sprite: heroSprite,
   };
@@ -81,28 +98,28 @@ type Enemy = {
   const enemies: Enemy[] = [
     {
       x: app.screen.width + 10,
-      y: groundY - 25,
-      height: 25,
-      width: 15,
+      y: groundY - 55,
+      height: 55,
+      width: 25,
       speed: 3,
-      graphic: new Graphics().rect(0, 0, 15, 25).fill("red"),
+      graphic: new Graphics().rect(0, 0, 25, 55).fill("red"),
     },
-    {
-      x: app.screen.width + 150,
-      y: groundY - 25,
-      height: 25,
-      width: 15,
-      speed: 3,
-      graphic: new Graphics().rect(0, 0, 15, 25).fill("red"),
-    },
-    {
-      x: app.screen.width + 300,
-      y: groundY - 25,
-      height: 25,
-      width: 15,
-      speed: 3,
-      graphic: new Graphics().rect(0, 0, 15, 25).fill("red"),
-    },
+    // {
+    //   x: app.screen.width + 150,
+    //   y: groundY - 25,
+    //   height: 25,
+    //   width: 15,
+    //   speed: 3,
+    //   graphic: new Graphics().rect(0, 0, 15, 25).fill("red"),
+    // },
+    // {
+    //   x: app.screen.width + 300,
+    //   y: groundY - 25,
+    //   height: 25,
+    //   width: 15,
+    //   speed: 3,
+    //   graphic: new Graphics().rect(0, 0, 15, 25).fill("red"),
+    // },
   ];
 
   enemies.forEach((enemy) => {
